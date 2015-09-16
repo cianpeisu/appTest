@@ -44,6 +44,26 @@ public class ImageViewHelper {
         imageView.setImageMatrix(matrix);
 
     }
+    private void Scale(Matrix mMatrix,int mode)
+    {
+        //取得圖片縮放的層級
+        float level[] = new float[9];
+        mMatrix.getValues(level);
+
+        //狀態為縮放時進入
+        if (mode == ZOOM)
+        {
+            //若層級小於1則縮放至原始大小
+            if (level[0] < 0.3f)
+            {
+                mMatrix.setScale(0.3f, 0.3f);
+            }
+
+        }
+        Log.e("scale level:", level + "");
+
+    }
+
     public Matrix getMatrix(){
         return matrix;
     }
@@ -53,16 +73,12 @@ public class ImageViewHelper {
                 (float) dm.widthPixels / (float) bitmap.getWidth(),
                 (float) dm.heightPixels / (float) bitmap.getHeight());
         if (minScaleR < 1.0) {
-            matrix.postScale(minScaleR+0.5f, minScaleR+0.5f);
-            Log.e("minScaleR", minScaleR + "");
-            Log.e("minScaleR", bitmap.getWidth() + "");
-            Log.e("minScaleR",dm.widthPixels+"");
+            matrix.postScale(minScaleR + 0.5f, minScaleR + 0.5f);
 
-            Log.e("if", "zoom in");
         }
         else{
             matrix.postScale(minScaleR, minScaleR);
-            Log.e("else","zoom in");
+
         }
     }
     public void setZoomOut(){
@@ -70,10 +86,15 @@ public class ImageViewHelper {
                 (float) dm.widthPixels / (float) bitmap.getWidth(),
                 (float) dm.heightPixels / (float) bitmap.getHeight());
         if (minScaleR > 1.0) {
-            matrix.postScale((minScaleR-0.2f),(minScaleR-0.2f));
+            matrix.postScale((minScaleR - 0.2f), (minScaleR - 0.2f));
+            Scale(matrix, mode);
+            Log.e("setX:", matrix + "");
+
         }
         else{
             matrix.postScale(minScaleR, minScaleR);
+            Scale(matrix, mode);
+            Log.e("setZO", matrix + "");
         }
     }
 
@@ -161,6 +182,8 @@ public class ImageViewHelper {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 setZoomOut();
+                Scale(matrix, mode);
+                Log.e("listener matrix:", matrix + "");
                 center();
                 imageView.setImageMatrix(matrix);
             }
@@ -209,6 +232,7 @@ public class ImageViewHelper {
                         break;
                 }
                 imageView.setImageMatrix(matrix);
+                Scale(matrix, mode);
                 center();
                 return true;
             }
